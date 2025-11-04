@@ -35,7 +35,7 @@
                 </div>
 
                 <div class="grup-formulir">
-                    <label for="email_pembeli">Email Pembeli (Opsional)</label>
+                    <label for="email_pembeli">Email Pembeli </label>
                     <input 
                         type="email" 
                         id="email_pembeli" 

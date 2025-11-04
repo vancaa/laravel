@@ -17,6 +17,8 @@ class DetailTransaksiPenjualan extends Model
         'id_transaksi_penjualan',
         'id_product',
         'jumlah_pembelian',
+        'harga_saat_transaksi',
+        'subtotal', 
     ];
 
     public function transaksi()

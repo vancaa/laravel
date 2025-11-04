@@ -8,10 +8,11 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap & Icon -->
+    <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="shortcut icon" href="{{ asset('storage/image/pawfect-logo.png') }}" type="image/x-icon">
+
     <style>
         :root {
             --warna-utama: #B57F50;
@@ -26,7 +27,6 @@
             --transisi: all 0.3s ease;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: var(--font-utama);
             background-color: var(--warna-latar);
@@ -38,31 +38,29 @@
             width: 250px;
             height: 100vh;
             position: fixed;
+            top: 0;
+            left: 0;
             background-color: var(--warna-utama);
             color: var(--teks-terang);
             display: flex;
             flex-direction: column;
             padding: 2rem 0;
             box-shadow: var(--bayangan);
+            transition: transform 0.3s ease-in-out;
+            z-index: 2000;
         }
-        .logo-img {
-            width: 110px;
-            height: auto;
-            margin-top: 1rem;
-            border-radius: 12px; /* bisa diganti 50% kalau mau bulat */
+        .sidebar.hidden {
+            transform: translateX(-100%);
         }
 
-        .sidebar .logo {
+        .logo {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
-        .sidebar .logo h4 {
-            font-family: var(--font-judul);
-            font-size: 1.7rem;
-        }
-        .sidebar .logo p {
-            font-size: 0.8rem;
-            opacity: 0.7;
+        .logo-img {
+            width: 100px;
+            margin-top: 0.5rem;
+            border-radius: 12px;
         }
 
         .sidebar a {
@@ -74,65 +72,106 @@
             border-radius: 12px;
             transition: var(--transisi);
         }
-
         .sidebar a:hover,
         .sidebar a.active {
             background-color: rgba(255, 255, 255, 0.15);
             transform: translateX(5px);
         }
 
-        .sidebar form {
-            background-color: rgba(255,0,0, 0.15);
-            color: var(--teks-terang);
-            display: block;
-            text-decoration: none;
-            padding: 1rem 2rem;
-            margin: 0.3rem 1rem;
+        .logout-btn {
+            width: 70%;
+            background: #fff;
+            border: none;
+            color: var(--warna-utama);
+            font-family: var(--font-utama);
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: left;
+            padding: 0.9rem 1.5rem;
             border-radius: 12px;
             transition: var(--transisi);
-        }
-
-        .sidebar form:hover,
-        .sidebar form.active {
-            background-color: rgba(255, 255, 255, 0.15);
-            transform: translateX(5px);
-        }
-        
-        /* KONTEN UTAMA */
-        .content {
-            margin-left: 250px;
-            padding: 2rem;
-        }
-
-        .page-header {
-            background: #fff;
-            padding: 2rem;
-            border-bottom: 1px solid #eee;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
         }
-
-        .page-header h1 {
-            font-family: var(--font-judul);
-            color: var(--warna-utama);
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+        .logout-btn:hover {
+            background-color: #f7f7f7;
+            color: var(--warna-aksen);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
         }
+        .logout-form {
+    padding: 0 1rem;
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-start;
+}
+.logout-form {
+    padding: 0 1rem;
+    margin-top: auto;
+    display: flex;
+    justify-content: flex-start;
+}
 
-        .btn-primary-custom {
-            background: var(--warna-aksen);
+.logout-link {
+    background-color: #ffffff;
+    border: none;
+    color: var(--warna-utama);
+    width: 100%; /* sedikit lebih kecil */
+    margin-left: 0.5cm; /* 🔹 mundur sedikit dari sebelumnya (1cm → 0.5cm) */
+    text-align: left;
+    padding: 0.55rem 1rem; /* tombol sedikit lebih kecil */
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: var(--transisi);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.logout-link i {
+    font-size: 1.2rem;
+}
+
+.logout-link:hover {
+    background-color: var(--warna-sekunder);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+        /* TOGGLE BUTTON */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background-color: var(--warna-utama);
             color: white;
             border: none;
             border-radius: 8px;
-            padding: 0.6rem 1.2rem;
-            font-weight: 600;
-            transition: var(--transisi);
+            padding: 8px 12px;
+            z-index: 2100;
+            box-shadow: var(--bayangan);
+        }
+        .menu-toggle:hover {
+            background-color: #a76f44;
         }
 
-        .btn-primary-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        /* KONTEN */
+        .content {
+            margin-left: 250px;
+            padding: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.show { transform: translateX(0); }
+            .content { margin-left: 0; padding-top: 60px; }
         }
 
         footer {
@@ -141,52 +180,26 @@
             color: #aaa;
             font-size: 0.9rem;
         }
-
-        @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .content { margin-left: 0; }
-        }
-        .d-flex .pagination {
-            margin-left: 12px; 
-        }
-        .pagination .page-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 38px;
-            width: 38px;
-            border-radius: 8px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 14px;
-            color: #6b4b23;
-            line-height: normal;
-            padding: 0;
-        }
-
-        .pagination .page-item.active .page-link {
-            background-color: #d8b04c;
-            color: white;
-            border-color: #d8b04c;
-        }
-
-        .pagination .page-item.disabled .page-link {
-            background-color: #f2f2f2;
-            color: #c0c0c0;
-            border: none;
-        }
     </style>
 </head>
 
 <body>
+    <!-- Tombol Menu (Mobile) -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="bi bi-list" style="font-size: 1.5rem;"></i>
+    </button>
+
     <!-- SIDEBAR -->
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="logo">
             <h4>Pawfect</h4>
             <p>Manajemen Sistem</p>
-         <img src="{{ asset('storage/image/pawfect-logo.png') }}" alt="Logo Pawfect" class="logo-img">
-
+            <img src="{{ asset('storage/image/pawfect-logo.png') }}" alt="Logo Pawfect" class="logo-img">
         </div>
 
+        <a href="{{ url('/dashboard') }}" class="{{ request()->is('dashboard*') ? 'active' : '' }}">
+            <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
         <a href="{{ url('/products') }}" class="{{ request()->is('products*') ? 'active' : '' }}">
             <i class="bi bi-box"></i> Products
         </a>
@@ -199,12 +212,14 @@
         <a href="{{ url('/transaksi') }}" class="{{ request()->is('transaksi*') ? 'active' : '' }}">
             <i class="bi bi-cash-stack"></i> Transaksi
         </a>
-        <form action="{{ route('logout') }}" method="POST" >
-            @csrf
-            <button type="submit" class="dropdown-item text-danger">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </button>
-        </form>
+
+       <form action="{{ route('logout') }}" method="POST" class="logout-form mt-auto">
+    @csrf
+    <button type="submit" class="logout-link w-100 text-start">
+        <i class="bi bi-box-arrow-right me-2"></i> Logout
+    </button>
+</form>
+
     </div>
 
     <!-- KONTEN -->
@@ -215,6 +230,15 @@
 
     <!-- Script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle sidebar untuk mobile
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+        });
+    </script>
+
     @yield('scripts')
 </body>
 </html>

@@ -15,6 +15,7 @@ class TransaksiPenjualan extends Model
         'nama_kasir',
         'email_pembeli',
         'tanggal_transaksi',
+        'total_harga', 
     ];
 
 

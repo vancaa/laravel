@@ -1,3 +1,4 @@
+@markdown:View Edit Transaksi (dengan field email_pembeli):resources/views/transaksi/edit.blade.php
 @extends('layouts.app')
 @section('judulHalaman', 'Edit Transaksi')
 
@@ -6,7 +7,7 @@
     <div class="header-tambah">
         <div>
             <h1>Edit Transaksi</h1>
-            <p>Perbarui detail untuk transaksi <strong>#TRX-{{ $transaksi->id }}</strong></p>
+            <p>Perbarui detail untuk transaksi <strong>#TRX-{{ $transaksi->id }}</strong>. Email akan dikirim ulang setelah diperbarui.</p>
         </div>
     </div>
 
@@ -15,28 +16,31 @@
             @csrf
             @method('PUT')
 
-            {{-- Nama Kasir --}}
-            <div class="grup-formulir">
-                <label for="nama_kasir">Nama Kasir</label>
-                <input 
-                    type="text" 
-                    id="nama_kasir" 
-                    name="nama_kasir" 
-                    value="{{ old('nama_kasir', $transaksi->nama_kasir) }}" 
-                    required>
-                @error('nama_kasir')<div class="pesan-error">{{ $message }}</div>@enderror
-            </div>
+            {{-- PENTING: Pembungkus Grid Baru --}}
+            <div class="formulir-grid"> 
+                {{-- Nama Kasir --}}
+                <div class="grup-formulir">
+                    <label for="nama_kasir">Nama Kasir</label>
+                    <input 
+                        type="text" 
+                        id="nama_kasir" 
+                        name="nama_kasir" 
+                        value="{{ old('nama_kasir', $transaksi->nama_kasir) }}" 
+                        required>
+                    @error('nama_kasir')<div class="pesan-error">{{ $message }}</div>@enderror
+                </div>
 
-            {{-- Email Pembeli (Opsional) --}}
-            <div class="grup-formulir">
-                <label for="email_pembeli">Email Pembeli (Opsional)</label>
-                <input 
-                    type="email" 
-                    id="email_pembeli" 
-                    name="email_pembeli" 
-                    value="{{ old('email_pembeli', $transaksi->email_pembeli) }}">
-                @error('email_pembeli')<div class="pesan-error">{{ $message }}</div>@enderror
-            </div>
+                {{-- Email Pembeli (Sisipan Tugas) --}}
+                <div class="grup-formulir">
+                    <label for="email_pembeli">Email Pembeli (untuk Kirim Email)</label>
+                    <input 
+                        type="email" 
+                        id="email_pembeli" 
+                        name="email_pembeli" 
+                        value="{{ old('email_pembeli', $transaksi->email_pembeli) }}">
+                    @error('email_pembeli')<div class="pesan-error">{{ $message }}</div>@enderror
+                </div>
+            </div> {{-- Penutup Grid --}}
 
             <hr class="pemisah">
 
@@ -55,6 +59,7 @@
 </div>
 
 <style>
+/* CSS di sini TIDAK BERUBAH kecuali penambahan class formulir-grid */
 .halaman-penuh {
     background-color: #FFF8E7;
     padding: 3rem 4rem;
@@ -87,6 +92,14 @@
     width: 90%;
     max-width: 700px;
 }
+
+/* SISIPAN STYLE BARU: Formulir Grid */
+.formulir-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+}
+/* END SISIPAN STYLE BARU */
 
 .grup-formulir { margin-bottom: 1.3rem; }
 label {
@@ -158,3 +171,4 @@ input:focus {
 }
 </style>
 @endsection
+

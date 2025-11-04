@@ -6,29 +6,48 @@ use App\Models\TransaksiPenjualan;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail; 
 
 class TransaksiPenjualanController extends Controller
 {
-  
     public function index()
     {
+        // Asumsi logic index dari code yang Anda berikan sebelumnya
         $transaksis = TransaksiPenjualan::with('details.product')->latest()->paginate(4);
-       
+        
         return view('transaksi.index', compact('transaksis'));
     }
 
     public function create()
     {
+
         $products = Product::orderBy('title')->get();
         return view('transaksi.create', compact('products'));
     }
 
+    public function show(TransaksiPenjualan $transaksi)
+    {
+        // Menambahkan method ini
+        $transaksi->load('details.product');
+        return view('transaksi.show', compact('transaksi'));
+    }
+    
+    public function edit(TransaksiPenjualan $transaksi)
+    {
+        // Menambahkan method ini
+        $products = Product::orderBy('title')->get();
+        $transaksi->load('details');
+        return view('transaksi.edit', compact('transaksi', 'products'));
+    }
 
+    /**
+     * Handle incoming product purchases and send email.
+     */
     public function store(Request $request)
     {
         $request->validate([
             'nama_kasir' => 'required|string|max:50',
-            'email_pembeli' => 'nullable|email',
+            'email_pembeli' => 'nullable|email', 
             'products' => 'required|array|min:1',
             'products.*.id' => 'required|exists:products,id',
             'products.*.jumlah' => 'required|integer|min:1',
@@ -58,7 +77,7 @@ class TransaksiPenjualanController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($request, $grandTotal, $itemsToProcess) {
+            DB::transaction(function () use ($request, $grandTotal, $itemsToProcess, &$transaksi) {
                 
                 $transaksi = TransaksiPenjualan::create([
                     'nama_kasir' => $request->nama_kasir,
@@ -73,40 +92,27 @@ class TransaksiPenjualanController extends Controller
                         'harga_saat_transaksi' => $item['harga_saat_transaksi'], 
                         'subtotal' => $item['subtotal'], 
                     ]);
-
-                    
                     $item['product']->decrement('stock', $item['jumlah']);
+                }
+
+                if ($transaksi->email_pembeli) {
+                    $this->sendEmail($transaksi->email_pembeli, $transaksi->id);
                 }
             });
 
-            return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil dibuat.');
+            return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil dibuat dan email telah ' . ($request->email_pembeli ? 'dikirim.' : 'diabaikan karena email kosong.'));
 
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal membuat transaksi: ' . $e->getMessage())->withInput();
         }
     }
 
-    
-    public function show(TransaksiPenjualan $transaksi)
-    {
 
-        $transaksi->load('details.product');
-        return view('transaksi.show', compact('transaksi'));
-    }
-    
-   
-    public function edit(TransaksiPenjualan $transaksi)
-    {
-        $products = Product::orderBy('title')->get();
-        
-        $transaksi->load('details');
-        
-        return view('transaksi.edit', compact('transaksi', 'products'));
-    }
-
-    
+    /**
+     * Update transaction data (optional send email)
+     */
     public function update(Request $request, TransaksiPenjualan $transaksi)
-    {        
+    { 
         $request->validate([
             'nama_kasir' => 'required|string|max:50',
             'email_pembeli' => 'nullable|email',
@@ -114,10 +120,13 @@ class TransaksiPenjualanController extends Controller
 
         $transaksi->update($request->only(['nama_kasir', 'email_pembeli']));
 
-        return redirect()->route('transaksi.index')->with('success', 'Data kasir berhasil diupdate.');
+        if ($transaksi->email_pembeli) {
+            $this->sendEmail($transaksi->email_pembeli, $transaksi->id);
+        }
+
+        return redirect()->route('transaksi.index')->with('success', 'Data transaksi berhasil diupdate dan email telah ' . ($transaksi->email_pembeli ? 'dikirim ulang.' : 'diabaikan karena email kosong.'));
     }
-
-
+    
     public function destroy(TransaksiPenjualan $transaksi)
     {
         DB::transaction(function() use ($transaksi) {
@@ -128,5 +137,34 @@ class TransaksiPenjualanController extends Controller
         });
         
         return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil dihapus.');
+    }
+
+
+    public function sendEmail($to, $id)
+    {
+        $transaksi = TransaksiPenjualan::with('details.product') 
+            ->find($id); 
+            
+        if (!$transaksi) {
+            return response()->json(['message' => 'Transaksi not found!'], 404);
+        }
+
+        $grandTotal = $transaksi->total_harga ?? $transaksi->details->sum('subtotal');
+
+        $emailData = [
+            'transaksi' => $transaksi,
+            'details' => $transaksi->details,
+            'total_harga' => $grandTotal
+        ];
+
+        Mail::send('emails.transaksi_detail', $emailData, function ($message) use ($to, $transaksi, $grandTotal) {
+            
+            $subject = "Detail Transaksi: #" . $transaksi->id . " dengan Total Tagihan RP. " . number_format($grandTotal, 2, ',', '.') ;
+
+            $message->to($to)
+                    ->subject($subject);
+        }); 
+
+        return response()->json(['message' => 'Email sent successfully!']);
     }
 }

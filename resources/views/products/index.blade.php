@@ -57,6 +57,32 @@
     .tombol--edit { background: rgba(212, 175, 55, 0.1); color: var(--warna-aksen); }
     .tombol--hapus { background: rgba(220, 53, 69, 0.1); color: var(--warna-bahaya); }
     /* container already pake bootstrap util, tapi pastikan pagination tanpa top margin */
+/* 🎨 Ubah warna pagination jadi tema coklat */
+.pagination .page-link {
+    color: var(--warna-utama); /* teks nomor halaman */
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin: 0 4px;
+    transition: var(--transisi);
+}
+
+.pagination .page-link:hover {
+    background-color: rgba(181, 127, 80, 0.15); /* coklat lembut pas hover */
+    color: var(--warna-utama);
+    border-color: var(--warna-utama);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--warna-utama); /* coklat tua aktif */
+    color: #fff;
+    border-color: var(--warna-utama);
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #ccc;
+    background-color: #f8f8f8;
+    border-color: #eee;
+}
 
 </style>
 
