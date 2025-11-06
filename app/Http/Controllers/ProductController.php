@@ -11,13 +11,30 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
-
 class ProductController extends Controller
 {
+    // -----------------------------
+    // WEB VIEW: Halaman utama
+    // -----------------------------
     public function index(): View
     {
         $products = (new Product)->get_product()->latest()->paginate(4);
         return view('products.index', compact('products'));
+    }
+
+    // -----------------------------
+    // API: Ambil semua produk (JSON)
+    // -----------------------------
+    public function lihat()
+    {
+        return Product::all();
+    }
+
+    public function lihat_byid($id)
+    {
+        $product = Product::find($id);
+        if (!$product) return response()->json(['message' => 'Product not found'], 404);
+        return $product;
     }
 
     public function create(): View
@@ -108,7 +125,7 @@ class ProductController extends Controller
 
         Storage::disk('public')->delete('image/' . $product->image);
         DB::transaction(function() use ($product) {
-            $product->detailTransaksiPenjualan()->delete(); // pastikan relasi sudah ada di model Product
+            $product->detailTransaksiPenjualan()->delete();
             $product->delete();
         });
         return redirect()->route('products.index')->with('success', 'Data berhasil dihapus!');
